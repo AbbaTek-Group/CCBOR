@@ -1,0 +1,57 @@
+---
+title: "CCBOR Water Quality Asseement from Fracking"
+author: "Ivo - AbbaTek Group"
+date: "07/03/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Assessing water quality near fracking injection well sites in the Columbus Metro watersheds to protect drinking water in Columbus, Ohio
+
+ The Columbus Community Bill of Rights (CCBOR) group is conducting preliminary water quality testing to determine if there is a measurable impact from the injection waste. Even if there is not currently a detectable impact during the testing period, they aim to ensure continuous monitoring near the wells to hold the industries accountable for leaks, spills, or migration of the liquid waste into the water supply. As part of the group’s objective to protect their water, it aims to pass the Columbus Community Bill of Rights charter amendment to give citizens the legal right to say no to current and future oil and gas industry contamination in their watersheds. CCBOR started collecting and analyzing water quality data from selected sites across three watershed since August 13, 2020.  
+
+```{r Data}
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+
+combined_data <- read.csv("ccbordata.csv", stringsAsFactors = T)
+sampling_date1 <- as.Date(combined_data$Sampling_date, "%m/%d/%y")
+combined_data <- cbind(sampling_date1, combined_data)%>%select(-`Rainfall_.inches.`, Notes)
+combined_data <- combined_data %>% mutate(Day = day(sampling_date1), Month = month(sampling_date1), Year = year(sampling_date1))
+combined_data %>% select(Site, Day, Month, Year, Flow_rate_.0.5., Water_turbidity_.0.3., Water_temperature_.degrees.C., Total_dissolved_solids_.mg.L.,Conductivity_.µS., Salinity_.ppm.) %>% group_by(Site, Day, Month, Year)%>% summary()
+```
+
+## Visualizing the initial data set from a space-time perspective given the multiple interactions that occur across a range of space. 
+
+
+
+```{r conductivity, echo=FALSE}
+ggplot(combined_data, aes(x=Site, y=Conductivity_.µS., fill=Conductivity_.µS.)) +
+geom_bar(stat="identity", position="dodge")
+
+```
+
+# Plot of spatial variability of soil moisture 
+
+```{r total dissolved solids, echo=FALSE}
+ggplot(combined_data, aes(x = Month, y = Total_dissolved_solids_.mg.L., group = Site, colour = Site)) +
+geom_line() +
+facet_wrap(~ Site)
+```
+
+
+
+```{r total dissolved solids, echo=FALSE}
+
+combined_data %>% filter(!(Total_dissolved_solids_.mg.L. >= 100)) %>%         
+  #select(Year, Month, Probe, soil_moisture) %>% 
+  mutate(mean_TDS = mean(Total_dissolved_solids_.mg.L.)) %>% 
+  ggplot(aes(long, lat)) + geom_point(aes(long, lat, colour = mean_VSM), size = 5) + geom_text(aes(label = Site),
+                                                                                      data = combined_data, nudge_x = 0.00005) +
+  xlab('Longitude (deg)') + labs(title = 'Total_dissolved_solids_.mg.L.')
+
+

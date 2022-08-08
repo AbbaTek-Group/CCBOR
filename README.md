@@ -13,3 +13,4 @@ The folders in this project are:
 
 
 ## How to use this repository
+The *Vignettes* in the products folder contains a longer-form documentation that explains in more depth how to use the application. There you will find useful information with core function documentation of the application using a static document. However, a short step by step instruction of how to put it into use is provided below:  
