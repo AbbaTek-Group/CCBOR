@@ -9,3 +9,7 @@ The folders in this project are:
 *_figures_ -is where we will put plots, data pictures, and other images we have created to show data to other people.
 *_code_ -is where we will create code files for collecting, cleaning up, or analyzing data.
 *_products_ -this is the place where we will place reports, presentations, or other products we create for sharing with other people.
+*_utilities_ -this is the place for handy functions for supplementing the analysis code
+
+
+## How to use this repository
