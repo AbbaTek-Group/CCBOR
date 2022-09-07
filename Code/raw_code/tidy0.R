@@ -35,9 +35,17 @@ all_sites <- function(k) {
    
     # Time series plot
     
-    df_Site_number %>% mutate(date = as.Date(Sampling_date, "%m/%d/%y"), Site = as.factor(`Site(1-9)`)) %>% 
-      ggplot(aes(date, `Conductivity(µS)`, colour=Site)) + geom_line(na.rm = T) + 
+    #lineplot <- df_Site_number %>% mutate(date = as.Date(Sampling_date, "%m/%d/%y"), Site = as.factor(`Site(1-9)`)) %>% 
+     # ggplot(aes(date, `Conductivity(µS)`, colour=Site)) + geom_line(na.rm = T) + 
+      #labs(y='Conductivity(µS)')
+    
+    # Box and whisker plot
+    
+    Boxplot <- df_Site_number %>% mutate(date = as.Date(Sampling_date, "%m/%d/%y"), Site = as.factor(`Site(1-9)`)) %>% 
+      ggplot(aes(date, `Conductivity(µS)`, colour=Site)) + geom_boxplot(na.rm = T) + 
       labs(y='Conductivity(µS)')
+    
+    
     
     # Spatial Plot
     
@@ -50,14 +58,31 @@ all_sites <- function(k) {
 # Time series plot  
 
 ccbor_raw_data <- read_excel(path = x1_data, sheet = 10)
-ccbor_raw_data %>% mutate(date = as.Date(Sampling_date, "%m/%d/%y"), Site = as.factor(`Site(1-9)`)) %>% 
+ccbor_raw_data %>% 
+  mutate(date = as.Date(Sampling_date, "%m/%d/%y"), 
+         Site = as.factor(`Site(1-9)`)) %>% unite (Location1, Watershed:Location, remove = F) %>%
      ggplot(aes(date, `Conductivity(µS)`, colour=Site)) + geom_line(na.rm = T) + 
-     labs(y='Conductivity(µS)')
+      facet_wrap(~Site) + 
+  labs(title = 'Observed Conductivity(µS) in time', x = 'Date of Observation', y = 'Conductivity(µS)') + 
+  theme_bw()
+     
 
 # Spatial plot
+ccbor_raw_data %>% select(`Conductivity(µS)`, Lat, Long) %>%         # change here for topsoil, root and below root zone
+  #select(Year, Month, Probe, soil_moisture) %>% 
+  #mutate(mean_VSM = mean(soil_moisture)) %>% 
+  ggplot(aes(Long, Lat)) + geom_point(aes(Long, Lat, colour = `Conductivity(µS)`), size = 5) + geom_text(aes(label = `Site(1-9)`),
+                                                                                               data = ccbor_raw_data, nudge_x = 0.00005) +
+  xlab('Longitude (deg)') + labs(title = 'Conductivity(µS)')
 
 
-      
+# Extract all sites into a list
+
+Allsheets <- list(1:9)
+Allsites <- list()
+df <- for (i in 1:length(Allsheets)) {Allsites[[1]] <- read_excel(path = x1_data, sheet = Allsheets)}
+
+
 
 
 
